@@ -1,0 +1,29 @@
+{
+    "name" : "guidofaecke/doctrine-dbal-pdo-ibmi",
+    "description" : "Doctrine DBAL module for DB2 on the IBM i platform , while using PDO",
+    "type" : "library",
+    "license" : "MIT",
+    "authors" : [
+        {"name" : "Guido Faecke", "email" : "guido@emcent.com"}
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "require" : {
+        "php" : "^7.4 || ^8.0",
+        "ext-pdo" : "*"
+    },
+    "require-dev" : {
+        "doctrine/coding-standard": "^9.0",
+        "doctrine/dbal": "^3.3",
+        "psalm/plugin-phpunit": "^0.16.1",
+        "slevomat/coding-standard": "^7.1",
+        "squizlabs/php_codesniffer": "^3.6",
+        "vimeo/psalm": "^4.22"
+    },
+    "autoload" : {
+        "psr-4" : {
+            "DoctrineDbalPDOIbmi\\" : "src/"
+        }
+    }
+}
