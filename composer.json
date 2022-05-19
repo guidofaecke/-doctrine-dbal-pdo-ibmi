@@ -11,11 +11,12 @@
     },
     "require" : {
         "php" : "^7.4 || ^8.0",
-        "ext-pdo" : "*"
+        "ext-pdo" : "*",
+        "doctrine/coding-standard": "^9.0",
+        "doctrine/dbal": "^3.3"
     },
     "require-dev" : {
-        "doctrine/coding-standard": "^9.0",
-        "doctrine/dbal": "^3.3",
+
         "psalm/plugin-phpunit": "^0.16.1",
         "slevomat/coding-standard": "^7.1",
         "squizlabs/php_codesniffer": "^3.6",
