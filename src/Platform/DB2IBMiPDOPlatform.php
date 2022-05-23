@@ -30,7 +30,7 @@ use function sprintf;
  * More documentation about iSeries schema
  * at https://www-01.ibm.com/support/knowledgecenter/ssw_ibm_i_72/db2/rbafzcatsqlcolumns.htm
  */
-class DB2IBMiLinuxPlatform extends DB2Platform
+class DB2IBMiPDOPlatform extends DB2Platform
 {
     /**
      * {@inheritDoc}
@@ -132,7 +132,7 @@ class DB2IBMiLinuxPlatform extends DB2Platform
               AND c.COLUMN_NAME = pk.COLUMN_NAME
             WHERE
               UPPER(c.TABLE_NAME) = UPPER('" . $table . "')
-                " . ($database  !== null ? "AND c.TABLE_SCHEM = UPPER('" . $database . "')" : '') . '
+                " . ($database  !== null ? "AND c.TABLE_SCHEMA = UPPER('" . $database . "')" : '') . '
             ORDER BY c.ordinal_position
         ';
     }
@@ -230,8 +230,6 @@ class DB2IBMiLinuxPlatform extends DB2Platform
 
     /**
      * @return string
-     *
-     * @throws DBALException If not supported on this platform.
      */
     public function getListDatabasesSQL()
     {

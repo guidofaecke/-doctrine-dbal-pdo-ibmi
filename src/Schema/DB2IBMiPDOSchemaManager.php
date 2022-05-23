@@ -11,6 +11,8 @@ use Doctrine\DBAL\Schema\View;
 use Doctrine\DBAL\Types\Type;
 use DoctrineDbalPDOIbmi\Platform\DB2IBMiLinuxPlatform;
 
+use DoctrineDbalPDOIbmi\Platform\DB2IBMiPDOPlatform;
+
 use function array_change_key_case;
 use function assert;
 use function is_resource;
@@ -234,7 +236,7 @@ class DB2IBMiPDOSchemaManager extends AbstractSchemaManager
         $table = parent::listTableDetails($name);
 
         $platform = $this->_platform;
-        assert($platform instanceof DB2IBMiLinuxPlatform);
+        assert($platform instanceof DB2IBMiPDOPlatform);
 
         $sql = $platform->getListTableCommentsSQL($name);
 

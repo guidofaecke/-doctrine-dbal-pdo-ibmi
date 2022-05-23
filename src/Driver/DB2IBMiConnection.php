@@ -6,6 +6,7 @@ use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\ServerInfoAwareConnection;
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\ParameterType;
 use PDO;
 use PDOException;
@@ -18,14 +19,29 @@ class DB2IBMiConnection implements Connection, ServerInfoAwareConnection
     private PDO $conn;
 
     /**
-     * @param mixed[]      $params
-     * @param string|null  $username
-     * @param string|null  $password
-     * @param mixed[]|null $options
+     * @param array       $params
+     * @param string|null $username
+     * @param string|null $password
+     * @param array|null  $driverOptions
      */
-    public function __construct(array $params, ?string $username, ?string $password, ?array $options)
+    public function __construct(array $params, ?string $username, ?string $password, ?array $driverOptions)
     {
-        $this->conn = new PDO($params['connection_string'], $username, $password, $options);
+        $driverOptions ??= [];
+
+//        try {
+            $this->conn = new PDO(
+                $this->constructPdoDsn($params),
+                $username ?? $params['user'] ?? '',
+                $password ?? $params['password'] ?? '',
+                $driverOptions
+            );
+//        } catch (PDOException $exception) {
+//            throw Exception::new($exception);
+//        }
+//var_dump($pdo); exit;
+//        $this->conn = $pdo;
+//        return $pdo;
+//        $this->conn = new PDO($params['connection_string'], $username, $password, $driverOptionsls);
     }
 
     /**
@@ -146,11 +162,34 @@ class DB2IBMiConnection implements Connection, ServerInfoAwareConnection
         return $this->conn->errorCode();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function errorInfo(): array
+//    /**
+//     * {@inheritdoc}
+//     */
+//    public function errorInfo(): array
+//    {
+//        return $this->conn->errorInfo();
+//    }
+
+    private function constructPdoDsn(array $params): string
     {
-        return $this->conn->errorInfo();
+        $dsn = 'odbc:';
+
+        if (isset($params['driver']) && $params['driver'] !== '') {
+            $dsn .= 'DRIVER=' . $params['driver'] . ';';
+        }
+
+        if (isset($params['host']) && $params['host'] !== '') {
+            $dsn .= 'SYSTEM=' . $params['host'] . ';';
+        }
+
+        if (isset($params['naming']) && $params['naming'] !== '') {
+            $dsn .= 'NAMING=' . $params['naming'] . ';';
+        }
+
+        if (isset($params['dbname']) && $params['dbname'] !== '') {
+            $dsn .= 'DATABASE=' . $params['dbname'] . ';';
+        }
+
+        return $dsn;
     }
 }

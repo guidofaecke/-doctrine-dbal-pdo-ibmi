@@ -10,6 +10,10 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Schema\DB2SchemaManager;
 
+use DoctrineDbalPDOIbmi\Platform\DB2IBMiPDOPlatform;
+
+use DoctrineDbalPDOIbmi\Schema\DB2LUWIBMiPDOSchemaManager;
+
 use function assert;
 
 /**
@@ -22,7 +26,8 @@ abstract class AbstractDB2Driver implements Driver
      */
     public function getDatabasePlatform()
     {
-        return new DB2Platform();
+//        return new DB2Platform();
+        return new DB2IBMiPDOPlatform();
     }
 
     /**
@@ -32,7 +37,8 @@ abstract class AbstractDB2Driver implements Driver
     {
         assert($platform instanceof DB2Platform);
 
-        return new DB2SchemaManager($conn, $platform);
+//        return new DB2SchemaManager($conn, $platform);
+        return new DB2LUWIBMiPDOSchemaManager(); //SchemaManager($conn, $platform);
     }
 
     public function getExceptionConverter(): ExceptionConverter

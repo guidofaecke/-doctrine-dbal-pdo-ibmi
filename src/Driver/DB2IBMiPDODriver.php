@@ -4,6 +4,15 @@ namespace DoctrineDbalPDOIbmi\Driver;
 
 class DB2IBMiPDODriver extends AbstractDB2Driver
 {
+    public const NAMING_SYSTEM = 1;
+    public const NAMING_SQL = 0;
+
+    public const COMMIT_NO_COMMIT = 0;
+    public const COMMIT_READ_UNCOMMITED = 1;
+    public const COMMIT_READ_COMMITED = 2;
+    public const COMMIT_REPEATABLE_READ = 3;
+    public const COMMIT_SERIALIZABLE = 4;
+
     /**
      * {@inheritdoc}
      */
