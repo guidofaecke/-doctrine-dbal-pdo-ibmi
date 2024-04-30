@@ -190,6 +190,10 @@ class DB2IBMiConnection implements Connection, ServerInfoAwareConnection
             $dsn .= 'DATABASE=' . $params['dbname'] . ';';
         }
 
+        if (isset($params['commitmode']) && $params['commitmode'] !== '') {
+            $dsn .= 'COMMITMODE=' . $params['commitmode'] . ';';
+        }
+
         return $dsn;
     }
 }

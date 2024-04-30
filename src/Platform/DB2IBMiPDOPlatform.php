@@ -21,6 +21,7 @@
 namespace DoctrineDbalPDOIbmi\Platform;
 
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Platforms\DB2Platform;
 
 use function sprintf;
@@ -32,6 +33,11 @@ use function sprintf;
  */
 class DB2IBMiPDOPlatform extends DB2Platform
 {
+    public function supportsSchemas()
+    {
+        return true;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -148,12 +154,12 @@ class DB2IBMiPDOPlatform extends DB2Platform
             SELECT
               DISTINCT NAME
             FROM
-              SYSIBM.tables t
+              QSYS2.systables t
             WHERE
               table_type='BASE TABLE'
-                " . ($database !== null ? "AND t.TABLE_SCHEMA = UPPER('" . $database . "')" : '') . '
-            ORDER BY NAME
-        ';
+                " . ($database !== null ? "AND t.TABLE_SCHEMA = UPPER('" . $database . "')" : ''); // . '
+//            ORDER BY NAME
+//        ';
     }
 
     /**
@@ -242,6 +248,16 @@ class DB2IBMiPDOPlatform extends DB2Platform
         ';
     }
 
+    public function getCreateSchemaSQL($schemaName)
+    {
+        if (! $this->supportsSchemas()) {
+            throw Exception::notSupported(__METHOD__);
+        }
+
+        return '';
+//        return 'CREATE SCHEMA ' . $schemaName;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -271,6 +287,23 @@ class DB2IBMiPDOPlatform extends DB2Platform
      */
     public function getDateTimeFormatString(): string
     {
-        return 'Y-m-d-H.i.s.u';
+        return 'Y-m-d-H.i.s';
+//        return 'Y-m-d-H.i.s.u';
+    }
+
+    public function getListNamespacesSQL()
+    {
+//        var_dump('here'); exit;
+//        Deprecation::triggerIfCalledFromOutside(
+//            'doctrine/dbal',
+//            'https://github.com/doctrine/dbal/issues/4503',
+//            'PostgreSQLPlatform::getListNamespacesSQL() is deprecated,'
+//            . ' use PostgreSQLSchemaManager::listSchemaNames() instead.',
+//        );
+
+        return "SELECT table_schem
+                FROM   sysibm.sqlschemas";
+//                WHERE  schema_name NOT LIKE 'pg\_%'
+//                AND    schema_name != 'information_schema'";
     }
 }

@@ -29,6 +29,27 @@ use const CASE_LOWER;
  */
 class DB2IBMiPDOSchemaManager extends AbstractSchemaManager
 {
+    public function listNamespaceNames()
+    {
+//        Deprecation::triggerIfCalledFromOutside(
+//            'doctrine/dbal',
+//            'https://github.com/doctrine/dbal/issues/4503',
+//            'AbstractSchemaManager::listNamespaceNames() is deprecated,'
+//            . ' use AbstractSchemaManager::listSchemaNames() instead.',
+//        );
+
+        $sql = $this->_platform->getListNamespacesSQL();
+
+        $namespaces = $this->_conn->fetchAllAssociative($sql);
+        $namespacesRefined = [];
+        foreach ($namespaces as $namespace) {
+            $namespacesRefined[] = $namespace['TABLE_SCHEM'];
+        }
+//var_dump($namespacesRefined, __LINE__, __FILE__); exit;
+        return $this->getPortableNamespacesList($namespacesRefined);
+//        return $this->getPortableNamespacesList($namespaces);
+    }
+
     /**
      * {@inheritdoc}
      *

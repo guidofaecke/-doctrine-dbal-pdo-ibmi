@@ -14,6 +14,18 @@ use const CASE_LOWER;
 
 class DB2IBMiSchemaManager extends DB2LUWIBMiPDOSchemaManager
 {
+    public function getSchemaNames()
+    {
+//        Deprecation::trigger(
+//            'doctrine/dbal',
+//            'https://github.com/doctrine/dbal/issues/4503',
+//            'PostgreSQLSchemaManager::getSchemaNames() is deprecated,'
+//            . ' use PostgreSQLSchemaManager::listSchemaNames() instead.',
+//        );
+
+        return $this->listNamespaceNames();
+    }
+
     /**
      * {@inheritdoc}
      */
