@@ -2,7 +2,7 @@
 
 namespace DoctrineDbalPDOIbmi\Driver;
 
-class DB2IBMiPDODriver extends AbstractDB2Driver
+final class DB2IBMiPDODriver extends AbstractDB2Driver
 {
     public const NAMING_SYSTEM = 1;
     public const NAMING_SQL = 0;
@@ -16,8 +16,12 @@ class DB2IBMiPDODriver extends AbstractDB2Driver
     /**
      * {@inheritdoc}
      */
-    public function connect(array $params, $username = null, $password = null, array $driverOptions = [])
-    {
+    public function connect(
+        array $params,
+        $username = null,
+        $password = null,
+        array $driverOptions = []
+    ) {
         if (! isset($params['protocol'])) {
             $params['protocol'] = 'TCPIP';
         }
