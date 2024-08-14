@@ -19,7 +19,7 @@ use function assert;
 /**
  * Abstract base implementation of the {@see Doctrine\DBAL\Driver} interface for IBM DB2 based drivers.
  */
-abstract class AbstractDB2Driver implements Driver
+abstract class AbstractIBMiDB2Driver implements Driver
 {
     /**
      * {@inheritdoc}

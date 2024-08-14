@@ -1,8 +1,11 @@
 <?php
 
-namespace DoctrineDbalPDOIbmi\Driver;
+namespace DoctrineDbalPDOIbmi\Driver\PDO;
 
-final class DB2IBMiPDODriver extends AbstractDB2Driver
+use DoctrineDbalPDOIbmi\Driver\AbstractIBMiDB2Driver;
+use DoctrineDbalPDOIbmi\Driver\Connection;
+
+class DriverIBMi extends AbstractIBMiDB2Driver
 {
     public const NAMING_SYSTEM = 1;
     public const NAMING_SQL = 0;
@@ -48,7 +51,7 @@ final class DB2IBMiPDODriver extends AbstractDB2Driver
             $password = null;
         }
 
-        return new DB2IBMiPDOConnection($params, $username, $password, $driverOptions);
+        return new Connection($params, $username, $password, $driverOptions);
     }
 
     /**

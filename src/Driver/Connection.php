@@ -11,7 +11,7 @@ use function array_key_exists;
  * More documentation about iSeries schema
  * at https://www-01.ibm.com/support/knowledgecenter/ssw_ibm_i_72/db2/rbafzcatsqlcolumns.htm
  */
-class DB2IBMiPDOConnection extends DB2IBMiConnection
+class Connection extends DB2IBMiConnection
 {
     /** @var array|mixed[]|null */
     protected $driverOptions = [];
