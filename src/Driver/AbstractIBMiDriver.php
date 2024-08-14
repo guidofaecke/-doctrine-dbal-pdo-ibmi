@@ -8,7 +8,6 @@ use Doctrine\DBAL\Driver\API\ExceptionConverter;
 use Doctrine\DBAL\Driver\API\IBMDB2;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
-use Doctrine\DBAL\Schema\DB2SchemaManager;
 
 use DoctrineDbalPDOIbmi\Platform\DB2IBMiPDOPlatform;
 
@@ -19,7 +18,7 @@ use function assert;
 /**
  * Abstract base implementation of the {@see Doctrine\DBAL\Driver} interface for IBM DB2 based drivers.
  */
-abstract class AbstractIBMiDB2Driver implements Driver
+abstract class AbstractIBMiDriver implements Driver
 {
     /**
      * {@inheritdoc}
