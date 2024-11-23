@@ -1,78 +1,137 @@
 <?php
 
-namespace DoctrineDbalPDOIbmi\Driver;
+declare(strict_types=1);
 
-use ReflectionProperty;
+namespace Doctrine\DBAL\IBMIDB2PDO\Driver;
 
-use function array_key_exists;
+use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
+use Doctrine\DBAL\Driver\Exception\IdentityColumnsNotSupported;
+use Doctrine\DBAL\Driver\Exception\NoIdentityValue;
+use PDO;
+use PDOException;
+use PDOStatement;
 
-/**
- * IBMi Db2 Connection.
- * More documentation about iSeries schema
- * at https://www-01.ibm.com/support/knowledgecenter/ssw_ibm_i_72/db2/rbafzcatsqlcolumns.htm
- */
-class Connection extends DB2IBMiConnection
+use function assert;
+
+final class Connection implements ConnectionInterface
 {
-    /** @var array|mixed[]|null */
-    protected $driverOptions = [];
-
     /**
-     * @param mixed[]      $params
-     * @param string|null  $username
-     * @param string|null  $password
-     * @param mixed[]|null $driverOptions
-     */
-    public function __construct(array $params, ?string $username, ?string $password, ?array $driverOptions = [])
-    {
-        $this->driverOptions = $driverOptions;
-
-        parent::__construct($params, $username, $password, $driverOptions);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function lastInsertId($name = null)
-    {
-        $sql  = 'SELECT INTEGER_COLUMN FROM QSYS2' . $this->getSchemaSeparatorSymbol() . 'QSQPTABL';
-        $stmt = $this->prepare($sql);
-        $stmt->execute();
-
-        $res = $stmt->fetch();
-
-        return $res['INTEGER_COLUMN'];
-    }
-
-    /**
-     * Returns the appropriate schema separation symbol for i5 systems.
-     * Other systems can hardcode '.' but i5 may need '.' or  '/' depending on the naming mode.
+     * @internal The connection can be only instantiated by its driver.
      *
-     * @return string
+     * @param PDO $connection
      */
-    public function getSchemaSeparatorSymbol()
+    public function __construct(private readonly PDO $connection)
     {
-        // if "i5 naming" is on, use '/' to separate schema and table. Otherwise use '.'
-        if (array_key_exists('i5_naming', $this->driverOptions) && $this->driverOptions['i5_naming']) {
-            // "i5 naming" mode requires a slash
-            return '/';
+        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
+    public function getServerVersion(): string
+    {
+        return $this->connection->getAttribute(PDO::ATTR_SERVER_VERSION);
+    }
+
+    public function prepare(string $sql): Statement
+    {
+        try {
+            $stmt = $this->connection->prepare($sql);
+            assert($stmt instanceof PDOStatement);
+
+            return new Statement($stmt);
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
+
+    public function query(string $sql): Result
+    {
+        try {
+            $stmt = $this->connection->query($sql);
+            assert($stmt instanceof PDOStatement);
+
+            return new Result($stmt);
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
+
+    public function quote(string $value): string
+    {
+        return $this->connection->quote($value);
+    }
+
+    public function exec(string $sql): int|string
+    {
+        try {
+            $result = $this->connection->exec($sql);
+
+            assert($result !== false);
+
+            return $result;
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
+
+    public function lastInsertId(): string
+    {
+        try {
+            $value = $this->connection->lastInsertId();
+        } catch (PDOException $exception) {
+            assert($exception->errorInfo !== null);
+            [$sqlState] = $exception->errorInfo;
+
+            // if the PDO driver does not support this capability, PDO::lastInsertId() triggers an IM001 SQLSTATE
+            // see https://www.php.net/manual/en/pdo.lastinsertid.php
+            if ($sqlState === 'IM001') {
+                throw IdentityColumnsNotSupported::new();
+            }
+
+            // PDO PGSQL throws a 'lastval is not yet defined in this session' error when no identity value is
+            // available, with SQLSTATE 55000 'Object Not In Prerequisite State'
+            if ($sqlState === '55000' && $this->connection->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql') {
+                throw NoIdentityValue::new($exception);
+            }
+
+            throw Exception::new($exception);
         }
 
-        // SQL naming requires a dot
-        return '.';
+        // pdo_mysql & pdo_sqlite return '0', pdo_sqlsrv returns '' or false depending on the PHP version
+        if ($value === '0' || $value === '' || $value === false) {
+            throw NoIdentityValue::new();
+        }
+
+        return $value;
     }
 
-    /**
-     * Retrieves ibm_db2 native resource handle.
-     *
-     * Could be used if part of your application is not using DBAL.
-     *
-     * @return resource
-     */
-    public function getWrappedResourceHandle()
+    public function beginTransaction(): void
     {
-        $connProperty = new ReflectionProperty(DB2IBMiConnection::class, '_conn');
-        $connProperty->setAccessible(true);
+        try {
+            $this->connection->beginTransaction();
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
 
-        return $connProperty->getValue($this);
+    public function commit(): void
+    {
+        try {
+            $this->connection->commit();
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
+
+    public function rollBack(): void
+    {
+        try {
+            $this->connection->rollBack();
+        } catch (PDOException $exception) {
+            throw Exception::new($exception);
+        }
+    }
+
+    public function getNativeConnection(): PDO
+    {
+        return $this->connection;
     }
 }

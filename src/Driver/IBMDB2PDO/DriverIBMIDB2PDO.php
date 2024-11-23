@@ -1,11 +1,11 @@
 <?php
 
-namespace DoctrineDbalPDOIbmi\Driver\PDO;
+namespace Doctrine\DBAL\IBMIDB2PDO\Driver\IBMDB2PDO;
 
-use DoctrineDbalPDOIbmi\Driver\AbstractIBMiDriver;
-use DoctrineDbalPDOIbmi\Driver\Connection;
+use Doctrine\DBAL\IBMIDB2PDO\Driver\AbstractIBMIDB2PDODriver;
+use Doctrine\DBAL\IBMIDB2PDO\Driver\Connection;
 
-class DriverIBMi extends AbstractIBMiDriver
+class DriverIBMIDB2PDO extends AbstractIBMIDB2PDODriver
 {
     public const NAMING_SYSTEM = 1;
     public const NAMING_SQL = 0;

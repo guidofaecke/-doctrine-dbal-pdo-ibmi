@@ -2,7 +2,7 @@
 
 namespace DoctrineDbalPDOIbmi\Schema;
 
-use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\IBMIDB2PDO\Schema\Column;
 use Doctrine\DBAL\Types\Type;
 
 use function array_change_key_case;
@@ -12,7 +12,7 @@ use function trim;
 
 use const CASE_LOWER;
 
-class DB2IBMiSchemaManager extends DB2LUWIBMiPDOSchemaManager
+class DB2IBMiSchemaManager extends IBMIDB2LUWIBMiPDOSchemaManager
 {
     /**
      * {@inheritdoc}

@@ -3,6 +3,7 @@
     "description" : "Doctrine DBAL module for DB2 on the IBM i platform , while using PDO",
     "type" : "library",
     "license" : "MIT",
+    "minimum-stability": "stable",
     "authors" : [
         {"name" : "Guido Faecke", "email" : "gfaecke@gmail.com"}
     ],
@@ -14,9 +15,9 @@
         }
     },
     "require" : {
-        "php" : "^7.4 || ^8.0",
-        "ext-pdo" : "*",
-        "doctrine/dbal": "^3.3"
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "doctrine/dbal": "^4.2"
     },
     "require-dev" : {
         "doctrine/coding-standard": "^9.0",
@@ -27,9 +28,7 @@
     },
     "autoload" : {
         "psr-4" : {
-            "DoctrineDbalPDOIbmi\\" : "src/"
+            "Doctrine\\DBAL\\IBMIDB2PDO\\" : "src/"
         }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": false
+    }
 }
