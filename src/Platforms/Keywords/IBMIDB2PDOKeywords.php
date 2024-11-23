@@ -9,7 +9,7 @@ use Doctrine\DBAL\Platforms\Keywords\KeywordList;
 /**
  * DB2 Keywords.
  */
-class IBMiDB2PDOKeywords extends KeywordList
+class IBMIDB2PDOKeywords extends KeywordList
 {
     /**
      * {@inheritDoc}

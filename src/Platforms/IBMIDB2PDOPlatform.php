@@ -3,7 +3,7 @@
 namespace Doctrine\DBAL\IBMIDB2PDO\Platforms;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\IBMIDB2PDO\Platforms\Keywords\IBMiDB2PDOKeywords;
+use Doctrine\DBAL\IBMIDB2PDO\Platforms\Keywords\IBMIDB2PDOKeywords;
 use Doctrine\DBAL\IBMIDB2PDO\Schema\IBMDB2PDOSchemaManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DateIntervalUnit;
@@ -587,7 +587,7 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
 
     protected function createReservedKeywordsList(): KeywordList
     {
-        return new IBMiDB2PDOKeywords();
+        return new IBMIDB2PDOKeywords();
     }
 
     public function createSchemaManager(Connection$connection): IBMDB2PDOSchemaManager
