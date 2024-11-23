@@ -5,13 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\DBAL\IBMIDB2PDO\Driver\Exception;
 
 use Doctrine\DBAL\Driver\AbstractException;
-
-use PDO;
-
 use PDOStatement;
-
-use function db2_stmt_error;
-use function db2_stmt_errormsg;
 
 /**
  * @internal
