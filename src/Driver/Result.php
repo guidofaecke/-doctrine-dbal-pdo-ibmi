@@ -4,22 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\DBAL\IBMIDB2PDO\Driver;
 
-use Doctrine\DBAL\Driver\FetchUtils;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Exception\InvalidColumnIndex;
-
-use Doctrine\DBAL\IBMIDB2PDO\Driver\Exception\StatementError;
 use PDO;
-
 use PDOException;
 use PDOStatement;
-
-use function db2_fetch_array;
-use function db2_fetch_assoc;
-use function db2_free_result;
-use function db2_num_fields;
-use function db2_num_rows;
-use function db2_stmt_error;
+use ValueError;
 
 final class Result implements ResultInterface
 {
