@@ -4,7 +4,7 @@ namespace Doctrine\DBAL\IBMIDB2PDO\Platforms;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\IBMIDB2PDO\Platforms\Keywords\IBMiDB2PDOKeywords;
-use Doctrine\DBAL\IBMIDB2PDO\Schema\IBMIDB2PDOSchemaManager;
+use Doctrine\DBAL\IBMIDB2PDO\Schema\IBMDB2PDOSchemaManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DateIntervalUnit;
 use Doctrine\DBAL\Platforms\Exception\NotSupported;
@@ -21,11 +21,6 @@ use Doctrine\DBAL\Types\Types;
 
 use function sprintf;
 
-/**
- * IBMi Db2 Schema Manager.
- * More documentation about iSeries schema
- * at https://www-01.ibm.com/support/knowledgecenter/ssw_ibm_i_72/db2/rbafzcatsqlcolumns.htm
- */
 class IBMIDB2PDOPlatform extends AbstractPlatform
 {
     /**
@@ -595,8 +590,8 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
         return new IBMiDB2PDOKeywords();
     }
 
-    public function createSchemaManager(Connection$connection): IBMIDB2PDOSchemaManager
+    public function createSchemaManager(Connection$connection): IBMDB2PDOSchemaManager
     {
-        return new IBMIDB2PDOSchemaManager($connection, $this);
+        return new IBMDB2PDOSchemaManager($connection, $this);
     }
 }
