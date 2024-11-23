@@ -9,15 +9,12 @@ use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
 use PDO;
 use PDOException;
+use PDOStatement;
 
 final class Statement implements StatementInterface
 {
-    /**
-     * @internal The statement can be only instantiated by its driver connection.
-     *
-     * @param resource $stmt
-     */
-    public function __construct(private readonly mixed $stmt)
+    /** @internal The statement can be only instantiated by its driver connection. */
+    public function __construct(private readonly PDOStatement $stmt)
     {
     }
 
@@ -29,7 +26,8 @@ final class Statement implements StatementInterface
             $this->stmt->bindValue($param, $value, $pdoType);
         } catch (PDOException $exception) {
             throw Exception::new($exception);
-        }    }
+        }
+    }
 
     /**
      * @internal Driver options can be only specified by a PDO-based driver.
@@ -78,4 +76,5 @@ final class Statement implements StatementInterface
             ParameterType::LARGE_OBJECT => PDO::PARAM_LOB,
             ParameterType::BOOLEAN => PDO::PARAM_BOOL,
         };
-    }}
+    }
+}

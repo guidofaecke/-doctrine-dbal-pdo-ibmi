@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="vendor/squizlabs/php_codesniffer/phpcs.xsd"
+>
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors"/>
+
+    <!-- Show progress of the run and show sniff names -->
+    <arg value="ps"/>
+
+    <config name="php_version" value="80100"/>
+
+    <file>src</file>
+
+    <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.DisallowLateStaticBindingForConstants.DisallowedLateStaticBindingForConstant"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.ControlStructureSpacing.IncorrectLinesCountAfterLastControlStructure"/>
+        <!-- https://github.com/doctrine/coding-standard/issues/288 -->
+        <exclude name="SlevomatCodingStandard.TypeHints.UnionTypeHintFormat.DisallowedShortNullable"/>
+
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+        <!-- https://github.com/slevomat/coding-standard/issues/867 -->
+        <exclude name="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing.IncorrectLinesCountAfterLastControlStructure"/>
+        <!-- See https://github.com/squizlabs/PHP_CodeSniffer/issues/2937 -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
+        <exclude name="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment.UselessInheritDocComment">
+        <exclude-pattern>src/Platforms/IBMIDB2PDOPlatform.php</exclude-pattern>
+    </rule>
+</ruleset>

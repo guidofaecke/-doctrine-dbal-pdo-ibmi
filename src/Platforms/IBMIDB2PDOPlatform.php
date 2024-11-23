@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\DBAL\IBMIDB2PDO\Platforms;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\IBMIDB2PDO\Platforms\Keywords\IBMIDB2PDOKeywords;
-use Doctrine\DBAL\IBMIDB2PDO\Schema\IBMDB2PDOSchemaManager;
+use Doctrine\DBAL\IBMIDB2PDO\Schema\IBMIDB2PDOSchemaManager;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DateIntervalUnit;
 use Doctrine\DBAL\Platforms\Exception\NotSupported;
@@ -19,7 +21,13 @@ use Doctrine\DBAL\TransactionIsolationLevel;
 use Doctrine\DBAL\Types\DateTimeType;
 use Doctrine\DBAL\Types\Types;
 
+use function array_merge;
+use function count;
+use function current;
+use function explode;
+use function implode;
 use function sprintf;
+use function str_contains;
 
 class IBMIDB2PDOPlatform extends AbstractPlatform
 {
@@ -590,8 +598,8 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
         return new IBMIDB2PDOKeywords();
     }
 
-    public function createSchemaManager(Connection$connection): IBMDB2PDOSchemaManager
+    public function createSchemaManager(Connection $connection): IBMIDB2PDOSchemaManager
     {
-        return new IBMDB2PDOSchemaManager($connection, $this);
+        return new IBMIDB2PDOSchemaManager($connection, $this);
     }
 }

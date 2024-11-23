@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\DBAL\IBMIDB2PDO\Schema;
 
+use Doctrine\DBAL\IBMIDB2PDO\Platforms\IBMIDB2PDOPlatform;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Column;
@@ -12,14 +15,25 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Types\Types;
 
 use function array_change_key_case;
+use function implode;
+use function preg_match;
+use function str_replace;
+use function strpos;
 use function strtolower;
+use function strtoupper;
+use function substr;
 
 use const CASE_LOWER;
 
-class IBMDB2PDOSchemaManager extends AbstractSchemaManager
+/**
+ * IBM Db2 PDO Schema Manager.
+ *
+ * @extends AbstractSchemaManager<IBMIDB2PDOPlatform>
+ */
+class IBMIDB2PDOSchemaManager extends AbstractSchemaManager
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     protected function _getPortableTableColumnDefinition($tableColumn): Column
     {
@@ -154,7 +168,6 @@ class IBMDB2PDOSchemaManager extends AbstractSchemaManager
                 $foreignKeys[$tableForeignKey['index_name']]['foreign_columns'][] = $tableForeignKey['foreign_column'];
             }
         }
-
 
         return parent::_getPortableTableForeignKeysList($foreignKeys);
     }
