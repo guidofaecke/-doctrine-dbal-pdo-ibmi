@@ -1,2 +1,2 @@
-# doctrine-dbal-pdo-ibmi
-PDO implementation to use DB2 on an IBM i
+# Doctrine DBAL PDO IBM i
+PDO implementation to use with IBM i DB2, within and outside of the IBMi platform.

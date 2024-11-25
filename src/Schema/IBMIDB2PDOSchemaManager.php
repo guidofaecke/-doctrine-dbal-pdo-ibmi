@@ -23,6 +23,8 @@ use function strtolower;
 use function strtoupper;
 use function substr;
 
+use function var_dump;
+
 use const CASE_LOWER;
 
 /**
@@ -84,12 +86,12 @@ class IBMIDB2PDOSchemaManager extends AbstractSchemaManager
         }
 
         $options = [
-            'length'          => $length,
+            'length'          => $length === null ? null : (int) $length,
             'unsigned'        => false,
             'fixed'           => $fixed,
             'default'         => $default,
             'autoincrement'   => (bool) $tableColumn['autoincrement'],
-            'notnull'         => $tableColumn['nulls'] === 'N',
+            'notnull'         => $tableColumn['nulls'] === 0,
             'platformOptions' => [],
         ];
 
@@ -102,7 +104,7 @@ class IBMIDB2PDOSchemaManager extends AbstractSchemaManager
             $options['precision'] = $precision;
         }
 
-        return new Column($tableColumn['colname'], Type::getType($type), $options);
+        return new Column($tableColumn['column_name'], Type::getType($type), $options);
     }
 
     /**
@@ -200,7 +202,7 @@ class IBMIDB2PDOSchemaManager extends AbstractSchemaManager
     {
         $sql = <<<'SQL'
 SELECT NAME
-FROM SYSIBM.SYSTABLES
+FROM QSYS2.SYSTABLES
 WHERE TYPE = 'T'
   AND CREATOR = ?
 SQL;
@@ -213,37 +215,41 @@ SQL;
         $sql = 'SELECT';
 
         if ($tableName === null) {
-            $sql .= ' C.TABNAME AS NAME,';
+            $sql .= ' C.TABLE_NAME AS NAME,';
         }
 
         $sql .= <<<'SQL'
-       C.COLNAME,
-       C.TYPENAME,
-       C.CODEPAGE,
-       C.NULLS,
-       C.LENGTH,
-       C.SCALE,
-       C.REMARKS AS COMMENT,
+       C.COLUMN_NAME,
+       C.DATA_TYPE AS TYPENAME,
+       C.CHARACTER_SET_NAME AS CODEPAGE,
+       D.NULLABLE AS NULLS,
+       D.COLUMN_SIZE AS LENGTH,
+       C.NUMERIC_SCALE AS SCALE,
+       D.COLUMN_TEXT AS COMMENT,
        CASE
-           WHEN C.GENERATED = 'D' THEN 1
+           WHEN C.IDENTITY_GENERATION IS NOT NULL THEN 1
            ELSE 0
            END   AS AUTOINCREMENT,
-       C.DEFAULT
-FROM SYSCAT.COLUMNS C
-         JOIN SYSCAT.TABLES AS T
-              ON T.TABSCHEMA = C.TABSCHEMA
-                  AND T.TABNAME = C.TABNAME
+       C.COLUMN_DEFAULT as DEFAULT
+    FROM SYSIBM.COLUMNS C
+         JOIN QSYS2.TABLES AS T
+              ON T.TABLE_SCHEMA = C.TABLE_SCHEMA
+                  AND T.TABLE_NAME = C.TABLE_NAME
+         JOIN SYSIBM.SQLCOLUMNS AS D
+              ON D.TABLE_SCHEM = C.TABLE_SCHEMA
+                  AND D.TABLE_NAME = C.TABLE_NAME
+                  AND D.COLUMN_NAME = C.COLUMN_NAME
 SQL;
 
-        $conditions = ['C.TABSCHEMA = ?', "T.TYPE = 'T'"];
+        $conditions = ['C.TABLE_SCHEMA = ?', "T.TABLE_TYPE = 'BASE TABLE'"];
         $params     = [$databaseName];
 
         if ($tableName !== null) {
-            $conditions[] = 'C.TABNAME = ?';
+            $conditions[] = 'C.TABLE_NAME = ?';
             $params[]     = $tableName;
         }
 
-        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY C.TABNAME, C.COLNO';
+        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY C.TABLE_NAME, C.ORDINAL_POSITION';
 
         return $this->connection->executeQuery($sql, $params);
     }
@@ -253,36 +259,36 @@ SQL;
         $sql = 'SELECT';
 
         if ($tableName === null) {
-            $sql .= ' IDX.TABNAME AS NAME,';
+            $sql .= ' IDX.TABLE_NAME AS NAME,';
         }
 
         $sql .= <<<'SQL'
-             IDX.INDNAME AS KEY_NAME,
-             IDXCOL.COLNAME AS COLUMN_NAME,
+             IDX.INDEX_NAME AS KEY_NAME,
+             IDXCOL.COLUMN_NAME AS COLUMN_NAME,
              CASE
-                 WHEN IDX.UNIQUERULE = 'P' THEN 1
+                 WHEN IDX.IS_UNIQUE = 'P' THEN 1
                  ELSE 0
              END AS PRIMARY,
              CASE
-                 WHEN IDX.UNIQUERULE = 'D' THEN 1
+                 WHEN IDX.IS_UNIQUE = 'D' THEN 1
                  ELSE 0
              END AS NON_UNIQUE
-        FROM SYSCAT.INDEXES AS IDX
-        JOIN SYSCAT.TABLES AS T
-          ON IDX.TABSCHEMA = T.TABSCHEMA AND IDX.TABNAME = T.TABNAME
-        JOIN SYSCAT.INDEXCOLUSE AS IDXCOL
-          ON IDX.INDSCHEMA = IDXCOL.INDSCHEMA AND IDX.INDNAME = IDXCOL.INDNAME
+        FROM QSYS2.SYSindexes AS IDX
+        JOIN QSYS2.SYSTABLES AS T
+          ON IDX.TABLE_SCHEMA = T.TABLE_SCHEMA AND IDX.TABLE_NAME = T.TABLE_NAME
+        JOIN QSYS2.SYSKEYS AS IDXCOL
+          ON IDX.INDEX_SCHEMA = IDXCOL.INDEX_SCHEMA AND IDX.INDEX_NAME = IDXCOL.INDEX_NAME
 SQL;
 
-        $conditions = ['IDX.TABSCHEMA = ?', "T.TYPE = 'T'"];
+        $conditions = ['IDX.TABLE_SCHEMA = ?', "T.TABLE_TYPE = 'T'"];
         $params     = [$databaseName];
 
         if ($tableName !== null) {
-            $conditions[] = 'IDX.TABNAME = ?';
+            $conditions[] = 'IDX.TABLE_NAME = ?';
             $params[]     = $tableName;
         }
 
-        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY IDX.INDNAME, IDXCOL.COLSEQ';
+        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY IDX.INDEX_NAME, IDXCOL.COLUMN_POSITION';
 
         return $this->connection->executeQuery($sql, $params);
     }
@@ -292,38 +298,44 @@ SQL;
         $sql = 'SELECT';
 
         if ($tableName === null) {
-            $sql .= ' R.TABNAME AS NAME,';
+            $sql .= ' R.TABLE_NAME AS NAME,';
         }
 
         $sql .= <<<'SQL'
              FKCOL.COLNAME AS LOCAL_COLUMN,
-             R.REFTABNAME AS FOREIGN_TABLE,
+             R.TABLE_NAME AS FOREIGN_TABLE,
              PKCOL.COLNAME AS FOREIGN_COLUMN,
-             R.CONSTNAME AS INDEX_NAME,
+             R.CONSTRAINT_NAME AS INDEX_NAME,
              CASE
-                 WHEN R.UPDATERULE = 'R' THEN 'RESTRICT'
+                 WHEN C.UPDATE_RULE = 'R' THEN 'RESTRICT'
              END AS ON_UPDATE,
              CASE
-                 WHEN R.DELETERULE = 'C' THEN 'CASCADE'
-                 WHEN R.DELETERULE = 'N' THEN 'SET NULL'
-                 WHEN R.DELETERULE = 'R' THEN 'RESTRICT'
+                 WHEN C.DELETE_RULE = 'C' THEN 'CASCADE'
+                 WHEN C.DELETE_RULE = 'N' THEN 'SET NULL'
+                 WHEN C.DELETE_RULE = 'R' THEN 'RESTRICT'
              END AS ON_DELETE
-        FROM SYSCAT.REFERENCES AS R
-         JOIN SYSCAT.TABLES AS T
-              ON T.TABSCHEMA = R.TABSCHEMA
-                  AND T.TABNAME = R.TABNAME
-         JOIN SYSCAT.KEYCOLUSE AS FKCOL
-              ON FKCOL.CONSTNAME = R.CONSTNAME
-                  AND FKCOL.TABSCHEMA = R.TABSCHEMA
-                  AND FKCOL.TABNAME = R.TABNAME
-         JOIN SYSCAT.KEYCOLUSE AS PKCOL
-              ON PKCOL.CONSTNAME = R.REFKEYNAME
-                  AND PKCOL.TABSCHEMA = R.REFTABSCHEMA
-                  AND PKCOL.TABNAME = R.REFTABNAME
-                  AND PKCOL.COLSEQ = FKCOL.COLSEQ
+        FROM QSYS2.SYSCST AS R
+         JOIN QSYS2.SYSREFCST AS S
+              ON R.CONSTRAINT_SCHEMA = S.CONSTRAINT_SCHEMA
+                  AND R.CONSTRAINT_NAME = S.CONSTRAINT_NAME
+         JOIN QSYS2.REF_CONSTRAINTS AS C
+              ON C.CONSTRAINT_SCHEMA = R.CONSTRAINT_SCHEMA
+                  AND C.CONSTRAINT_NAME = R.CONSTRAINT_NAME
+         JOIN QSYS2.TABLES AS T
+              ON T.TABLE_SCHEMA = R.TABLE_SCHEMA
+                  AND T.TABLE_NAME = R.TABLE_NAME
+         JOIN QSYS2.SYSKEYCST AS FKCOL
+              ON FKCOL.CONSTRAINT_NAME = R.CONSTRAINT_NAME
+                  AND FKCOL.TABLE_SCHEMA = R.TABLE_SCHEMA
+                  AND FKCOL.TABLE_NAME = R.TABLE_NAME
+         JOIN QSYS2.SYSKEYCST AS PKCOL
+              ON PKCOL.CONSTRAINT_NAME = S.UNIQUE_CONSTRAINT_NAME
+                  AND PKCOL.TABLE_SCHEMA = S.UNIQUE_CONSTRAINT_SCHEMA
+                  AND PKCOL.TABLE_NAME =S.UNIQUE_CONSTRAINT_NAME
+                  AND PKCOL.COLUMN_POSITION = FKCOL.COLUMN_POSITION
 SQL;
 
-        $conditions = ['R.TABSCHEMA = ?', "T.TYPE = 'T'"];
+        $conditions = ['R.TABLE_SCHEMA = ?', "T.TABLE_TYPE = 'T'"];
         $params     = [$databaseName];
 
         if ($tableName !== null) {
@@ -331,7 +343,7 @@ SQL;
             $params[]     = $tableName;
         }
 
-        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY R.CONSTNAME, FKCOL.COLSEQ';
+        $sql .= ' WHERE ' . implode(' AND ', $conditions) . ' ORDER BY R.CONSTRAINT_NAME, FKCOL.COLSEQ';
 
         return $this->connection->executeQuery($sql, $params);
     }
@@ -351,7 +363,7 @@ SQL;
             $params[]     = $tableName;
         }
 
-        $sql .= ' FROM SYSIBM.SYSTABLES';
+        $sql .= ' FROM QSYS2.SYSTABLES';
 
         if ($conditions !== []) {
             $sql .= ' WHERE ' . implode(' AND ', $conditions);

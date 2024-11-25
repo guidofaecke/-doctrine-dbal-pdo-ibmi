@@ -50,6 +50,7 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
             'binary'    => Types::BINARY,
             'blob'      => Types::BLOB,
             'character' => Types::STRING,
+            'character varying' => Types::STRING,
             'clob'      => Types::TEXT,
             'date'      => Types::DATE_MUTABLE,
             'decimal'   => Types::DECIMAL,
@@ -207,7 +208,7 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
     /** @internal The method should be only used from within the {@see AbstractSchemaManager} class hierarchy. */
     public function getListViewsSQL(string $database): string
     {
-        return 'SELECT NAME, TEXT FROM SYSIBM.SYSVIEWS';
+        return 'SELECT NAME, TEXT FROM QSYS2.SYSVIEWS';
     }
 
     /** @internal The method should be only used from within the {@see AbstractPlatform} class hierarchy. */
