@@ -1,7 +1,6 @@
 # Doctrine DBAL PDO IBM i
 
 ## Doctrine DBAL PDO implementation against DB2 on your IBM i platform.
-It can be used directly on your IBM i or directly on your local machine or within a Docker container.
 
 ## Usage
 It can be used :
