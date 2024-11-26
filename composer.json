@@ -1,9 +1,18 @@
 {
     "name" : "guidofaecke/doctrine-dbal-pdo-ibmi",
-    "description" : "Doctrine DBAL PDO Driver for IBM i DB2 running local or in a docker container",
     "type" : "library",
+    "description" : "Doctrine DBAL PDO Driver for IBM i DB2 running local or in a docker container",
+    "keywords": [
+        "doctrine",
+        "dbal",
+        "pdo",
+        "ibmi",
+        "ibm",
+        "ibm i",
+        "db2",
+        "docker"
+    ],
     "license" : "MIT",
-    "minimum-stability": "stable",
     "authors" : [
         {"name" : "Guido Faecke", "email" : "gfaecke@gmail.com"}
     ],
