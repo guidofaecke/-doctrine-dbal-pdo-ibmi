@@ -1,6 +1,6 @@
 {
     "name" : "guidofaecke/doctrine-dbal-pdo-ibmi",
-    "description" : "Doctrine DBAL module for DB2 on the IBM i platform , while using PDO",
+    "description" : "Doctrine DBAL PDO Driver for IBM i DB2 running local or in a docker container",
     "type" : "library",
     "license" : "MIT",
     "minimum-stability": "stable",
@@ -15,7 +15,7 @@
         }
     },
     "require" : {
-        "php": "^8.1",
+        "php": "^8.3",
         "ext-pdo": "*",
         "doctrine/dbal": "^4.2"
     },
