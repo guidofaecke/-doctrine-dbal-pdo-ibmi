@@ -13,7 +13,7 @@ It can be used :
 - PHP >= 8.3
 - ext-pdo
 - unixodbc
-- [ODBC driver for IBM i Access Client Solutions](Ohttps://www.ibm.com/support/pages/odbc-driver-ibm-i-access-client-solutions)
+- [ODBC driver for IBM i Access Client Solutions](https://www.ibm.com/support/pages/odbc-driver-ibm-i-access-client-solutions)
 
 ## Installation
 ```bash
