@@ -9,7 +9,7 @@ It can be used :
 - Within a Docker container
 
 ## Requirements
-- PHP >= 8.3
+- PHP >= 8.1
 - ext-pdo
 - unixodbc
 - [ODBC driver for IBM i Access Client Solutions](https://www.ibm.com/support/pages/odbc-driver-ibm-i-access-client-solutions)
