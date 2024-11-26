@@ -7,17 +7,20 @@ namespace Doctrine\DBAL\IBMIDB2PDO\Driver;
 use Doctrine\DBAL\Driver\PDO\Exception\InvalidConfiguration;
 use Doctrine\DBAL\Driver\PDO\PDOConnect;
 use PDO;
-
 use PDOException;
+use SensitiveParameter;
 
 use function is_string;
-use function var_dump;
 
 class Driver extends AbstractIBMIDB2PDODriver
 {
     use PDOConnect;
 
+    /**
+     * {@inheritDoc}
+     */
     public function connect(
+        #[SensitiveParameter]
         array $params,
     ): Connection {
         $driverOptions = $params['driverOptions'] ?? [];
@@ -43,7 +46,6 @@ class Driver extends AbstractIBMIDB2PDODriver
                 $driverOptions,
             );
         } catch (PDOException $exception) {
-            var_dump($exception->getMessage());
             throw Exception::new($exception);
         }
 

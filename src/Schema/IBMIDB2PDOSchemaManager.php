@@ -23,8 +23,6 @@ use function strtolower;
 use function strtoupper;
 use function substr;
 
-use function var_dump;
-
 use const CASE_LOWER;
 
 /**
