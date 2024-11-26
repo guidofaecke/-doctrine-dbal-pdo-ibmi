@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="2"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    findUnusedBaselineEntry="true"
+    findUnusedCode="true"
+>
+    <projectFiles>
+        <directory name="src" />
+        <ignoreFiles>
+            <directory name="vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <UnusedClass>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Connection.php" />
+                <file name="src/Platforms/IBMIDB2PDOPlatform.php" />
+                <file name="src/Schema/IBMIDB2PDOSchemaManager.php" />
+            </errorLevel>
+        </UnusedClass>
+        <PossiblyUnusedMethod>
+            <errorLevel type="suppress">
+                <directory name="src/Driver" />
+            </errorLevel>
+        </PossiblyUnusedMethod>
+        <InvalidReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Connection.php" />
+            </errorLevel>
+        </InvalidReturnType>
+        <InvalidReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Connection.php" />
+            </errorLevel>
+        </InvalidReturnStatement>
+        <NullableReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Connection.php" />
+            </errorLevel>
+        </NullableReturnStatement>
+        <MoreSpecificReturnType>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Result.php" />
+            </errorLevel>
+        </MoreSpecificReturnType>
+        <LessSpecificReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/Driver/Result.php" />
+            </errorLevel>
+        </LessSpecificReturnStatement>
+    </issueHandlers>
+</psalm>
