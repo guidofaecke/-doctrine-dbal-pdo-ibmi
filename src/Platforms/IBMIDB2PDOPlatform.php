@@ -28,6 +28,7 @@ use function explode;
 use function implode;
 use function sprintf;
 use function str_contains;
+use function strlen;
 
 class IBMIDB2PDOPlatform extends AbstractPlatform
 {
@@ -330,7 +331,9 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
 
         // Some table alteration operations require a table reorganization.
         if ($needsReorg) {
-            $sql[] = "CALL SYSPROC.ADMIN_CMD ('REORG TABLE " . $tableNameSQL . "')";
+            $commandLength = 12 + strlen($tableNameSQL) + 1;
+
+            $sql[] = "CALL QSYS2.QCMDEXC('RGZPFM FILE(" . $tableNameSQL . ")', " . $commandLength . ')';
         }
 
         return array_merge(
