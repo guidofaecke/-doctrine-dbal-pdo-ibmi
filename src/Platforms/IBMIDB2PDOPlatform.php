@@ -332,7 +332,8 @@ class IBMIDB2PDOPlatform extends AbstractPlatform
         // Some table alteration operations require a table reorganization.
         if ($needsReorg) {
             $commandLength = 12 + strlen($tableNameSQL) + 1;
-            $sql[] = "CALL QSYS2.QCMDEXC('RGZPFM FILE(" . $tableNameSQL . ")', " . $commandLength . ")";
+
+            $sql[] = "CALL QSYS2.QCMDEXC('RGZPFM FILE(" . $tableNameSQL . ")', " . $commandLength . ')';
         }
 
         return array_merge(
